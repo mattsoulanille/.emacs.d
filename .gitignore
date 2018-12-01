@@ -1,0 +1,8 @@
+%backup%~
+.mc-lists.el
+auto-save-list/
+elpa/
+games/
+init.el~
+irony/
+network-security.data
