@@ -92,6 +92,10 @@
 ;;(require 'flymake-jslint)
 ;;(add-hook 'js-mode-hook 'flymake-jslint-load)
 
+;; Window resizing
+(global-set-key (kbd "C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "C-<left>") 'shrink-window-horizontally)
+
 
 ; TeX
 (setq TeX-parse-self t) ; Enable parse on load.
