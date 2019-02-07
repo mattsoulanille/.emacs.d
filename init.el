@@ -125,22 +125,22 @@
   :hook ((typescript-mode . tide-setup)
          (typescript-mode . tide-hl-identifier-mode)
          (before-save . tide-format-before-save))
-  :bind ("C-c C-c" . compile)
-  :bind ("C-c C-f" . tide-fix)
+;;  :bind ("C-c C-c" . compile)
+;;  :bind ("C-c C-f" . tide-fix)
   )
-;; (with-eval-after-load "tide"
-;;   (define-key tide-mode-map "C-c C-c" 'compile)
-;;   (define-key tide-mode-map "C-c C-f" 'tide-fix)
-;;   )
+(with-eval-after-load "tide"
+  (bind-key "C-c C-c" 'compile tide-mode-map)
+  (bind-key "C-c C-f" 'tide-fix tide-mode-map)
+  )
 
 
 
 
-; End Typescript
+;; End Typescript
 (put 'downcase-region 'disabled nil)
 
 
-; Flymd browser
+;; Flymd browser
 (defun my-flymd-browser-function (url)
   (let ((process-environment (browse-url-process-environment)))
     (apply 'start-process
@@ -150,14 +150,20 @@
            (list "-a" "firefox" url))))
 (setq flymd-browser-open-function 'my-flymd-browser-function)
 
-; Company Eclim for java
+;; Company Eclim for java
+(setq eclimd-autostart t)
 (custom-set-variables
  '(eclim-eclipse-dirs '("/Applications/Eclipse.app/Contents/Eclipse"))
  '(eclim-executable "/Users/matthew/.p2/pool/plugins/org.eclim_2.8.0/bin/eclim")
  )
 (company-emacs-eclim-setup)
 (add-hook 'java-mode-hook 'eclim-mode)
+(with-eval-after-load "eclim"
+  ;;  (define-key eclim-mode-map "C-c C-c" 'eclim-project-build)
+  (bind-key "C-c C-c" 'eclim-project-build eclim-mode-map)
+  (bind-key "C-c C-f" 'eclim-problems-correct eclim-mode-map)
+  )
 
 
 
-;(require 'eclimd)
+;; (require 'eclimd)
