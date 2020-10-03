@@ -16,14 +16,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- ;;'(eclim-eclipse-dirs '("/Applications/Eclipse.app/Contents/Eclipse"))
- ;;'(eclim-executable "/Users/matthew/.p2/pool/plugins/org.eclim_2.8.0/bin/eclim")
- '(inhibit-startup-screen t)
  '(indent-tabs-mode nil)
+ '(inhibit-startup-screen t)
  '(json-reformat:indent-width 2)
  '(package-selected-packages
-   (quote
-	(json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))))
+   '(company-quickhelp json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode)))
 (package-initialize)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -80,6 +77,7 @@
   (define-key company-active-map (kbd "C-p") 'company-select-previous)
   (define-key company-mode-map [remap indent-for-tab-command] 'company-indent-or-complete-common)
   (define-key company-mode-map [remap c-indent-line-or-region] 'company-indent-or-complete-common)
+  (company-quickhelp-mode)
   ()
   )
 
@@ -178,13 +176,13 @@
   (company-mode +1))
 
 
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
-(add-hook 'web-mode-hook
-          (lambda ()
-            (when (string-equal "ts" (file-name-extension buffer-file-name))
-              (setup-tide-mode))))
-;; enable typescript-tslint checker
-;;(flycheck-add-mode 'typescript-tslint 'web-mode)
+;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
+;; (add-hook 'web-mode-hook
+;;           (lambda ()
+;;             (when (string-equal "ts" (file-name-extension buffer-file-name))
+;;               (setup-tide-mode))))
+;; ;; enable typescript-tslint checker
+;; (flycheck-add-mode 'typescript-tslint 'web-mode)
 
 
 ;; aligns annotation to the right hand side
@@ -207,6 +205,8 @@
 (with-eval-after-load "tide"
   (bind-key "C-c C-c" 'compile tide-mode-map)
   (bind-key "C-c C-f" 'tide-fix tide-mode-map)
+  (bind-key "C-c C-d" 'tide-documentation-at-point tide-mode-map)
+  (typescript-mode)
   )
 
 ;; End Typescript
