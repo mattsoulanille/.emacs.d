@@ -3,7 +3,7 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-(package-initialize)
+;;(package-initialize)
 
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
 ;			 ("marmalade" . "https://marmalade-repo.org/packages/")
@@ -87,12 +87,12 @@
 
 ; lsp
 (use-package lsp-mode
-  :commands lsp
-  :config (require 'lsp-clients))
+  :commands lsp)
+;;:config (require 'lsp-clients))
 
 (use-package lsp-ui)
 ;; Allow company to get stuff from lsp
-(use-package company-lsp)
+;(use-package company-lsp)
 
 ;; lsp keybinds
 (with-eval-after-load "lsp-mode"
