@@ -16,10 +16,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ ;;'(eclim-eclipse-dirs '("/Applications/Eclipse.app/Contents/Eclipse"))
+ ;;'(eclim-executable "/Users/matthew/.p2/pool/plugins/org.eclim_2.8.0/bin/eclim")
  '(inhibit-startup-screen t)
+ '(indent-tabs-mode nil)
+ '(json-reformat:indent-width 2)
  '(package-selected-packages
    (quote
-	(magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint smart-tabs-mode cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))))
+	(json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))))
 (package-initialize)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -29,8 +33,6 @@
  )
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-
-
 
 ;; == irony-mode ==
 (use-package irony
@@ -146,8 +148,6 @@
 (setq-default tab-width 4) ; or any other preferred value
 (setq cua-auto-tabify-rectangles nil)
 
-(smart-tabs-insinuate 'c++ 'javascript 'java 'c)
-(smart-tabs-advice js2-indent-line js2-basic-offset)
 
 (global-set-key (kbd "C-c C-r") 'mc/mark-all-like-this) ; Ctrl+c r
 (global-set-key (kbd "C-c C-l") 'mc/edit-lines)
@@ -177,6 +177,16 @@
   ;; `M-x package-install [ret] company`
   (company-mode +1))
 
+
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "ts" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+;; enable typescript-tslint checker
+;;(flycheck-add-mode 'typescript-tslint 'web-mode)
+
+
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
 
@@ -199,10 +209,14 @@
   (bind-key "C-c C-f" 'tide-fix tide-mode-map)
   )
 
-
-
-
 ;; End Typescript
+
+;; JSON 2 space indent
+(add-hook 'json-mode-hook
+          (lambda ()
+            (make-local-variable 'js-indent-level)
+            (setq js-indent-level 2)))
+
 (put 'downcase-region 'disabled nil)
 
 
@@ -239,6 +253,17 @@
            (concat (venv-name-to-dir (cm:jedi-environment-root-name)) "bin/jediepcserver")))
         (jedi:install-server-block))))
 
+;; Company Eclim for java
+(setq eclimd-autostart t)
+
+(company-emacs-eclim-setup)
+(add-hook 'java-mode-hook 'eclim-mode)
+(with-eval-after-load "eclim"
+  ;;  (define-key eclim-mode-map "C-c C-c" 'eclim-project-build)
+  (bind-key "C-c C-c" 'eclim-project-build eclim-mode-map)
+  (bind-key "C-c C-f" 'eclim-problems-correct eclim-mode-map)
+  )
+
 
 
 ;; Company Eclim for java
@@ -260,3 +285,15 @@
 (add-hook 'bazel-mode-hook (lambda () (add-hook 'before-save-hook #'bazel-format nil t)))
 
 ;; (require 'eclimd)
+
+;; Python
+;; (defun my/python-mode-hook ()
+;;   (add-to-list 'company-backends 'company-jedi))
+
+;; (add-hook 'python-mode-hook 'my/python-mode-hook)
+
+;; (use-package jedi-core
+;;   :ensure t
+;;   :config
+;;   )
+;; ;;  (setq python-environment-directory "~/.emacs.d/.python-environments"))
