@@ -20,7 +20,8 @@
  '(inhibit-startup-screen t)
  '(json-reformat:indent-width 2)
  '(package-selected-packages
-   '(company-quickhelp json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode)))
+   '(ivy projectile company-glsl glsl-mode flycheck-yamllint gn-mode verilog-mode company-quickhelp json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))
+ '(typescript-indent-level 4))
 (package-initialize)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -30,6 +31,7 @@
  )
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+;(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tide-mode))
 
 ;; == irony-mode ==
 (use-package irony
@@ -176,13 +178,24 @@
   (company-mode +1))
 
 
+(projectile-mode +1)
+;; Recommended keymap prefix on Windows/Linux
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+(ivy-mode)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+
+
 ;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
-;; (add-hook 'web-mode-hook
-;;           (lambda ()
-;;             (when (string-equal "ts" (file-name-extension buffer-file-name))
-;;               (setup-tide-mode))))
-;; ;; enable typescript-tslint checker
-;; (flycheck-add-mode 'typescript-tslint 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (let ((extension (file-name-extension buffer-file-name)))
+              (when (or (string-equal "ts" extension) (string-equal "tsx" extension))
+                (setup-tide-mode)))))
+;; enable typescript-tslint checker
+(flycheck-add-mode 'typescript-tslint 'web-mode)
 
 
 ;; aligns annotation to the right hand side
@@ -200,8 +213,10 @@
 ;;  :bind ("C-c C-f" . tide-fix)
   )
 (with-eval-after-load "tide"
-  (bind-key "C-c C-c" 'compile tide-mode-map)
+  (bind-key "C-c C-c" 'comment-region tide-mode-map)
+  (bind-key "C-c C-u" 'uncomment-region tide-mode-map)
   (bind-key "C-c C-f" 'tide-fix tide-mode-map)
+  (bind-key "C-c C-o" 'tide-organize-imports tide-mode-map)
   (bind-key "C-c C-d" 'tide-documentation-at-point tide-mode-map)
   (typescript-mode)
   )
@@ -280,6 +295,9 @@
 
 ;; Bazel BUILD file formatting
 (add-hook 'bazel-mode-hook (lambda () (add-hook 'before-save-hook #'bazel-format nil t)))
+
+;; glsl
+(add-to-list 'company-backends 'company-glsl)
 
 ;; (require 'eclimd)
 
