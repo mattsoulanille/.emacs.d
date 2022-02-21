@@ -18,10 +18,11 @@
  ;; If there is more than one, they won't work right.
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
+ '(js-indent-level 2)
  '(json-reformat:indent-width 2)
  '(package-selected-packages
-   '(ivy projectile company-glsl glsl-mode flycheck-yamllint gn-mode verilog-mode company-quickhelp json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))
- '(typescript-indent-level 4))
+   '(bazel ivy projectile company-glsl glsl-mode flycheck-yamllint gn-mode verilog-mode company-quickhelp json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))
+ '(typescript-indent-level 2))
 (package-initialize)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -33,25 +34,28 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 ;(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tide-mode))
 
+(add-hook 'c-mode-hook #'lsp-deferred)
+(add-hook 'c++-mode-hook #'lsp-deferred)
+
 ;; == irony-mode ==
-(use-package irony
-  :ensure t
-  :defer t
-  :init
-  (add-hook 'c++-mode-hook 'irony-mode)
-  (add-hook 'c-mode-hook 'irony-mode)
-  (add-hook 'objc-mode-hook 'irony-mode)
-  :config
-  ;; replace the `completion-at-point' and `complete-symbol' bindings in
-  ;; irony-mode's buffers by irony-mode's function
-  (defun my-irony-mode-hook ()
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-  )
+;; (use-package irony
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (add-hook 'c++-mode-hook 'irony-mode)
+;;   (add-hook 'c-mode-hook 'irony-mode)
+;;   (add-hook 'objc-mode-hook 'irony-mode)
+;;   :config
+;;   ;; replace the `completion-at-point' and `complete-symbol' bindings in
+;;   ;; irony-mode's buffers by irony-mode's function
+;;   (defun my-irony-mode-hook ()
+;;     (define-key irony-mode-map [remap completion-at-point]
+;;       'irony-completion-at-point-async)
+;;     (define-key irony-mode-map [remap complete-symbol]
+;;       'irony-completion-at-point-async))
+;;   (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+;;   )
 
 ;; == company-mode ==
 (use-package company
@@ -86,6 +90,14 @@
 ; Flycheck
 (use-package flycheck
   :hook (prog-mode . flycheck-mode))
+
+(setq lsp-clangd-binary-path "/usr/bin/clangd")
+;(setq lsp-disabled-clients '(clangd))
+
+;; (require 'eglot)
+;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+;; (add-hook 'c-mode-hook 'eglot-ensure)
+;; (add-hook 'c++-mode-hook 'eglot-ensure)
 
 ; lsp
 (use-package lsp-mode
@@ -207,8 +219,8 @@
   :ensure t
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save))
+         (typescript-mode . tide-hl-identifier-mode))
+;;         (before-save . tide-format-before-save)
 ;;  :bind ("C-c C-c" . compile)
 ;;  :bind ("C-c C-f" . tide-fix)
   )
