@@ -18,42 +18,7 @@
         ("C-p". company-select-previous))
   (:map company-mode-map
 	("TAB". company-indent-or-complete-common))
-
-  :config (global-company-mode)
-					;(define-key company-mode-map [remap c-indent-line-or-region] 'company-indent-or-complete-common)
-  )
-
-(use-package flycheck :ensure)
-(use-package typescript-mode :ensure)
-
-(defun debug-tide-hook () (message "DEBUG: hooked tide"))
-
-;; TypeScript
-(use-package tide
-  :ensure
-  :init (message "DEBUG: tide init")
-  ;;:mode "\\.ts\\'"
-  ;;:after (typescript-mode company flycheck)
-  :after (typescript-mode flycheck)
-  :hook ((typescript-mode . tide-setup)
-        (typescript-mode . setup-tide-mode)
-        (typescript-mode . tide-hl-identifier-mode)
-        (typescript-mode . company-mode)
-        (typescript-mode . debug-tide-hook)
-        (before-save . tide-format-before-save))
-  :config (defun setup-tide-mode ()
-	    (message "DEBUG: Running setup-tide-mode")
-	    (tide-setup)
-	    (flycheck-mode +1)
-	    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-	    (eldoc-mode +1)
-	    (tide-hl-identifier-mode +1)
-	    ;; company is an optional dependency. You have to
-	    ;; install it separately via package-install
-	    ;; `M-x package-install [ret] company`
-	    (company-mode +1)))
-
-
+  :config (global-company-mode))
 
 (use-package ivy
   :ensure
@@ -62,7 +27,34 @@
   (ivy-use-virtual-buffers t)
   :config (ivy-mode))
 
+(use-package flycheck :ensure)
 
+;; TypeScript
+(use-package typescript-mode :ensure)
+(use-package tide
+  :ensure
+  :after (typescript-mode flycheck)
+  :hook ((typescript-mode . tide-setup)
+        (typescript-mode . setup-tide-mode)
+        (typescript-mode . tide-hl-identifier-mode)
+        (typescript-mode . company-mode)
+        (before-save . tide-format-before-save))
+  :config (defun setup-tide-mode ()
+	    (tide-setup)
+	    (flycheck-mode +1)
+	    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+	    (eldoc-mode +1)
+	    (tide-hl-identifier-mode +1)
+	    (company-mode +1)))
+
+
+(use-package magit :ensure)
+(use-package bazel :ensure)
+(use-package json-mode
+  :ensure
+  :hook (json-mode . (lambda ()
+	   (make-local-variable 'js-indent-level)
+           (setq js-indent-level 2))))
 
 
 (custom-set-variables
