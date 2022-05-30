@@ -29,6 +29,12 @@
   (ivy-use-virtual-buffers t)
   :config (ivy-mode))
 
+(use-package projectile
+  :ensure
+  :bind (:map projectile-mode-map
+	      ("C-c p" . 'projectile-command-map))
+  :config (projectile-mode))
+
 (use-package flycheck :ensure)
 
 (use-package which-key
