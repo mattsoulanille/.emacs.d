@@ -1,326 +1,79 @@
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-;;(package-initialize)
-
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-;			 ("marmalade" . "https://marmalade-repo.org/packages/")
-			 ("melpa" . "https://melpa.org/packages/")))
-
-
 (require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(use-package auto-package-update
+  :ensure
+  :config
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (auto-package-update-maybe))
+
+(use-package company
+  :ensure
+  :bind
+  (:map company-active-map
+        ("TAB". company-complete-common-or-cycle)
+        ("C-n". company-select-next)
+        ("C-p". company-select-previous))
+  (:map company-mode-map
+	("TAB". company-indent-or-complete-common))
+
+  :config (global-company-mode)
+					;(define-key company-mode-map [remap c-indent-line-or-region] 'company-indent-or-complete-common)
+  )
+
+(use-package flycheck :ensure)
+(use-package typescript-mode :ensure)
+
+(defun debug-tide-hook () (message "DEBUG: hooked tide"))
+
+;; TypeScript
+(use-package tide
+  :ensure
+  :init (message "DEBUG: tide init")
+  ;;:mode "\\.ts\\'"
+  ;;:after (typescript-mode company flycheck)
+  :after (typescript-mode flycheck)
+  :hook ((typescript-mode . tide-setup)
+        (typescript-mode . setup-tide-mode)
+        (typescript-mode . tide-hl-identifier-mode)
+        (typescript-mode . company-mode)
+        (typescript-mode . debug-tide-hook)
+        (before-save . tide-format-before-save))
+  :config (defun setup-tide-mode ()
+	    (message "DEBUG: Running setup-tide-mode")
+	    (tide-setup)
+	    (flycheck-mode +1)
+	    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+	    (eldoc-mode +1)
+	    (tide-hl-identifier-mode +1)
+	    ;; company is an optional dependency. You have to
+	    ;; install it separately via package-install
+	    ;; `M-x package-install [ret] company`
+	    (company-mode +1)))
+
+
+
+(use-package ivy
+  :ensure
+  :custom
+  (ivy-count-format "(%d/%d) ")
+  (ivy-use-virtual-buffers t)
+  :config (ivy-mode))
+
+
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(indent-tabs-mode nil)
- '(inhibit-startup-screen t)
- '(js-indent-level 2)
- '(json-reformat:indent-width 2)
- '(package-selected-packages
-   '(bazel ivy projectile company-glsl glsl-mode flycheck-yamllint gn-mode verilog-mode company-quickhelp json-mode magit crontab-mode eglot yaml-mode toml-mode company-lsp lsp-ui lsp-mode rustic rust-auto-use flycheck-demjsonlint bazel-mode protobuf-mode company-jedi company-emacs-eclim eclim flycheck-rust rust-mode rjsx-mode flow-minor-mode web-mode multiple-cursors flycheck-nim nim-mode flymake-jslint flymake-jshint cmake-mode sage-shell-mode flymd company-irony company sml-mode tide irony bison-mode typescript forth-mode julia-mode markdown-mode racket-mode ## opencl-mode auctex haskell-mode lua-mode js2-mode))
- '(typescript-indent-level 2))
-(package-initialize)
+ '(package-selected-packages '(use-package cmake-mode auto-package-update)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-;(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tide-mode))
-
-(add-hook 'c-mode-hook #'lsp-deferred)
-(add-hook 'c++-mode-hook #'lsp-deferred)
-
-;; == irony-mode ==
-;; (use-package irony
-;;   :ensure t
-;;   :defer t
-;;   :init
-;;   (add-hook 'c++-mode-hook 'irony-mode)
-;;   (add-hook 'c-mode-hook 'irony-mode)
-;;   (add-hook 'objc-mode-hook 'irony-mode)
-;;   :config
-;;   ;; replace the `completion-at-point' and `complete-symbol' bindings in
-;;   ;; irony-mode's buffers by irony-mode's function
-;;   (defun my-irony-mode-hook ()
-;;     (define-key irony-mode-map [remap completion-at-point]
-;;       'irony-completion-at-point-async)
-;;     (define-key irony-mode-map [remap complete-symbol]
-;;       'irony-completion-at-point-async))
-;;   (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-;;   )
-
-;; == company-mode ==
-(use-package company
-  :hook (prog-mode . company-mode)
-  :ensure t
-  :defer t
-  :init (add-hook 'after-init-hook 'global-company-mode)
-  :config
-  (use-package company-irony :ensure t :defer t)
-  (setq company-idle-delay              nil
-	company-minimum-prefix-length   2
-	company-show-numbers            t
-	company-tooltip-limit           20
-	company-dabbrev-downcase        nil
-	company-backends                '((company-irony company-gtags))
-	)
-  :bind ("C-c ;" . company-complete-common)
-  )
-
-
-(with-eval-after-load 'company
-  (define-key company-active-map [tab] 'company-complete-common-or-cycle)
-  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous)
-  (define-key company-mode-map [remap indent-for-tab-command] 'company-indent-or-complete-common)
-  (define-key company-mode-map [remap c-indent-line-or-region] 'company-indent-or-complete-common)
-  (company-quickhelp-mode)
-  ()
-  )
-
-; Flycheck
-(use-package flycheck
-  :hook (prog-mode . flycheck-mode))
-
-(setq lsp-clangd-binary-path "/usr/bin/clangd")
-;(setq lsp-disabled-clients '(clangd))
-
-;; (require 'eglot)
-;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
-;; (add-hook 'c-mode-hook 'eglot-ensure)
-;; (add-hook 'c++-mode-hook 'eglot-ensure)
-
-; lsp
-(use-package lsp-mode
-  :commands lsp)
-;;:config (require 'lsp-clients))
-
-(use-package lsp-ui)
-;; Allow company to get stuff from lsp
-;(use-package company-lsp)
-
-;; lsp keybinds
-(with-eval-after-load "lsp-mode"
-  ;;(bind-key "C-c C-c" 'compile tide-mode-map)
-  (bind-key "C-c C-f" 'lsp-execute-code-action lsp-mode-map)
-  )
-
-
-;; Rust stuff
-(use-package toml-mode)
-
-;; (use-package rustic-mode
-;;   :hook (rustic-mode . lsp)
-;;   :config
-;;   (bind-key "C-c C-r" 'rustic-run rustic-mode-map)
-;;   (bind-key "C-c C-f" 'lsp-execute-code-action rustic-mode-map)
-;;   )
-
-(use-package rustic
-  :commands (cargo-minor-mode)
-  :mode ("\\.rs" . rustic-mode)
-  :config
-  (bind-keys :map rustic-mode-map
-             ("C-c TAB" . rustic-format-buffer)
-             ("C-c C-f" . lsp-execute-code-action)
-			 ("C-c C-c" . rustic-cargo-build)
-			 ("C-c f" . rustic-format-buffer))
-  :init
-  (setq company-tooltip-align-annotations t
-        rustic-format-on-save nil)
-  (add-hook 'rustic-mode-hook #'cargo-minor-mode)
-  (add-hook 'rustic-mode-hook #'flycheck-mode)
-  (add-hook 'rustic-mode-hook #'lsp)
-;  (add-hook 'rustic-mode-hook #'lsp-ui)
-  )
-
-;; (with-eval-after-load "rustic-mode"
-;;   ;;(bind-key "C-c C-c" 'compile tide-mode-map)
-;;   )
-
-;; Add keybindings for interacting with Cargo
-(use-package cargo
-  :hook (rustic-mode . cargo-minor-mode))
-
-;;(use-package flycheck-rust
-;;  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
-
-
-
-(setq-default tab-width 4) ; or any other preferred value
-(setq cua-auto-tabify-rectangles nil)
-
-
-(global-set-key (kbd "C-c C-r") 'mc/mark-all-like-this) ; Ctrl+c r
-(global-set-key (kbd "C-c C-l") 'mc/edit-lines)
-;;(require 'flymake-jslint)
-;;(add-hook 'js-mode-hook 'flymake-jslint-load)
-
-;; Window resizing
-(global-set-key (kbd "C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "C-<left>") 'shrink-window-horizontally)
-
-
-; TeX
-(setq TeX-parse-self t) ; Enable parse on load.
-(setq TeX-auto-save t) ; Enable parse on save.
-
-
-; Typescript
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
-  (company-mode +1))
-
-
-(projectile-mode +1)
-;; Recommended keymap prefix on Windows/Linux
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
-(ivy-mode)
-(setq ivy-use-virtual-buffers t)
-(setq enable-recursive-minibuffers t)
-
-
-;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-(add-hook 'web-mode-hook
-          (lambda ()
-            (let ((extension (file-name-extension buffer-file-name)))
-              (when (or (string-equal "ts" extension) (string-equal "tsx" extension))
-                (setup-tide-mode)))))
-;; enable typescript-tslint checker
-(flycheck-add-mode 'typescript-tslint 'web-mode)
-
-
-;; aligns annotation to the right hand side
-(setq company-tooltip-align-annotations t)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-(use-package tide
-  :ensure t
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode))
-;;         (before-save . tide-format-before-save)
-;;  :bind ("C-c C-c" . compile)
-;;  :bind ("C-c C-f" . tide-fix)
-  )
-(with-eval-after-load "tide"
-  (bind-key "C-c C-c" 'comment-region tide-mode-map)
-  (bind-key "C-c C-u" 'uncomment-region tide-mode-map)
-  (bind-key "C-c C-f" 'tide-fix tide-mode-map)
-  (bind-key "C-c C-o" 'tide-organize-imports tide-mode-map)
-  (bind-key "C-c C-d" 'tide-documentation-at-point tide-mode-map)
-  (typescript-mode)
-  )
-
-;; End Typescript
-
-;; JSON 2 space indent
-(add-hook 'json-mode-hook
-          (lambda ()
-            (make-local-variable 'js-indent-level)
-            (setq js-indent-level 2)))
-
-(put 'downcase-region 'disabled nil)
-
-
-;; Flymd browser
-;; (defun my-flymd-browser-function (url)
-;;   (let ((process-environment (browse-url-process-environment)))
-;;     (apply 'start-process
-;;            (concat "firefox " url)
-;;            nil
-;;            "/usr/bin/open"
-;;            (list "-a" "firefox" url))))
-;; (setq flymd-browser-open-function 'my-flymd-browser-function)
-
-(defun my-flymd-browser-function (url)
-  (let ((browse-url-browser-function 'browse-url-firefox))
-    (browse-url url)))
-(setq flymd-browser-open-function 'my-flymd-browser-function)
-
-;; Company Jedi for python
-(defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
-
-(add-hook 'python-mode-hook 'my/python-mode-hook)
-(setq python-shell-interpreter "python3")
-
-(defun cm:jedi-setup-server ()
-  "Setup Jedi server, update and reload."
-  (interactive)
-  (if (not (equal python-environment-default-root-name (cm:jedi-environment-root-name)))
-      (progn
-        (custom-set-variables
-         '(python-environment-default-root-name (cm:jedi-environment-root-name))
-         '(jedi:server-command
-           (concat (venv-name-to-dir (cm:jedi-environment-root-name)) "bin/jediepcserver")))
-        (jedi:install-server-block))))
-
-;; Company Eclim for java
-(setq eclimd-autostart t)
-
-(company-emacs-eclim-setup)
-(add-hook 'java-mode-hook 'eclim-mode)
-(with-eval-after-load "eclim"
-  ;;  (define-key eclim-mode-map "C-c C-c" 'eclim-project-build)
-  (bind-key "C-c C-c" 'eclim-project-build eclim-mode-map)
-  (bind-key "C-c C-f" 'eclim-problems-correct eclim-mode-map)
-  )
-
-
-
-;; Company Eclim for java
-
-;; (setq eclimd-autostart t)
-;; (custom-set-variables
-;;  '(eclim-eclipse-dirs '("/Applications/Eclipse.app/Contents/Eclipse"))
-;;  '(eclim-executable "/Users/matthew/.p2/pool/plugins/org.eclim_2.8.0/bin/eclim")
-;;  )
-;; (company-emacs-eclim-setup)
-;; (add-hook 'java-mode-hook 'eclim-mode)
-;; (with-eval-after-load "eclim"
-;;   ;;  (define-key eclim-mode-map "C-c C-c" 'eclim-project-build)
-;;   (bind-key "C-c C-c" 'eclim-project-build eclim-mode-map)
-;;   (bind-key "C-c C-f" 'eclim-problems-correct eclim-mode-map)
-;;   )
-
-;; Bazel BUILD file formatting
-(add-hook 'bazel-mode-hook (lambda () (add-hook 'before-save-hook #'bazel-format nil t)))
-
-;; glsl
-(add-to-list 'company-backends 'company-glsl)
-
-;; (require 'eclimd)
-
-;; Python
-;; (defun my/python-mode-hook ()
-;;   (add-to-list 'company-backends 'company-jedi))
-
-;; (add-hook 'python-mode-hook 'my/python-mode-hook)
-
-;; (use-package jedi-core
-;;   :ensure t
-;;   :config
-;;   )
-;; ;;  (setq python-environment-directory "~/.emacs.d/.python-environments"))
