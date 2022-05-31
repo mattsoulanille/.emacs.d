@@ -113,6 +113,13 @@
 	   (make-local-variable 'js-indent-level)
            (setq js-indent-level 2))))
 
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+
 (use-package rustic
   :ensure
   :bind (:map rustic-mode-map
