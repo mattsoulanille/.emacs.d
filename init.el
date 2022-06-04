@@ -47,6 +47,10 @@
   :ensure
   :config (which-key-mode))
 (use-package project :ensure)
+(use-package multiple-cursors
+  :ensure
+  :bind (("C-c C-l" . mc/edit-lines)))
+
 (use-package lsp-mode
   :ensure
   :init (setq lsp-keymap-prefix "C-c l")
@@ -99,7 +103,6 @@
   :hook ((typescript-mode . tide-setup)
         (typescript-mode . setup-tide-mode)
         (typescript-mode . tide-hl-identifier-mode)
-        (typescript-mode . company-mode)
         ;;(before-save . tide-format-before-save)
 )
   :config (defun setup-tide-mode ()
