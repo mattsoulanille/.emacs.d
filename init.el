@@ -20,7 +20,13 @@
         ("C-p". company-select-previous))
   (:map company-mode-map
 	("TAB". company-indent-or-complete-common))
-  :config (global-company-mode))
+  :hook (after-init . global-company-mode)
+  :config
+  (setq company-backends
+	'((company-capf)
+	  (company-clang)
+	  (company-files)
+	  (company-dabbrev))))
 
 (use-package ivy
   :ensure
@@ -94,7 +100,8 @@
         (typescript-mode . setup-tide-mode)
         (typescript-mode . tide-hl-identifier-mode)
         (typescript-mode . company-mode)
-        (before-save . tide-format-before-save))
+        ;;(before-save . tide-format-before-save)
+)
   :config (defun setup-tide-mode ()
 	    (tide-setup)
 	    (flycheck-mode +1)
@@ -159,7 +166,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(fill-column 80)
- '(package-selected-packages '(use-package cmake-mode auto-package-update)))
+ '(package-selected-packages '(use-package cmake-mode auto-package-update))
+ '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
