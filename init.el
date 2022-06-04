@@ -25,8 +25,7 @@
   (setq company-backends
 	'((company-capf)
 	  (company-clang)
-	  (company-files)
-	  (company-dabbrev))))
+	  (company-files))))
 
 (use-package ivy
   :ensure
@@ -122,7 +121,11 @@
 
 
 (use-package magit :ensure)
-(use-package bazel :ensure)
+(use-package bazel
+  :ensure
+  :config
+  (setq bazel-buildifier-before-save t))
+
 (use-package json-mode
   :ensure
   :hook (json-mode . (lambda ()
