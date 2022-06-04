@@ -46,10 +46,16 @@
 (use-package which-key
   :ensure
   :config (which-key-mode))
+
 (use-package project :ensure)
+
 (use-package multiple-cursors
   :ensure
   :bind (("C-c C-l" . mc/edit-lines)))
+
+(use-package browse-at-remote
+  :ensure
+  :bind (("C-c g g" . browse-at-remote)))
 
 (use-package lsp-mode
   :ensure
