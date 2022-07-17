@@ -40,6 +40,8 @@
 	      ("C-c p" . 'projectile-command-map))
   :config (projectile-mode))
 
+(use-package minimap :ensure)
+
 (use-package flycheck :ensure)
 
 (use-package which-key
@@ -82,17 +84,17 @@
   (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
   (lsp-rust-analyzer-display-closure-return-type-hints t)
   (lsp-rust-analyzer-display-parameter-hints nil)
-  (lsp-rust-analyzer-display-reborrow-hints nil)
-  :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+  (lsp-rust-analyzer-display-reborrow-hints nil))
+;  :config
+  ;(add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-(use-package lsp-ui
-  :ensure
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable nil))
+;; (use-package lsp-ui
+;;   :ensure
+;;   :commands lsp-ui-mode
+;;   :custom
+;;   (lsp-ui-peek-always-show t)
+;;   (lsp-ui-sideline-show-hover t)
+;;   (lsp-ui-doc-enable nil))
 
 (use-package lsp-pyright
   :ensure t
@@ -110,6 +112,12 @@
         (typescript-mode . tide-hl-identifier-mode)
         ;;(before-save . tide-format-before-save)
 )
+  :bind (:map tide-mode-map
+              ("C-c C-f" . tide-fix)
+              ("C-c C-r" . tide-rename)
+              ("C-c C-o" . tide-organize-imports)
+              ("C-c C-c" . comment-region)
+              ("C-c C-u" . uncomment-region))
   :config (defun setup-tide-mode ()
 	    (tide-setup)
 	    (flycheck-mode +1)
@@ -157,6 +165,7 @@
   ;; (setq lsp-eldoc-hook nil)
   ;; (setq lsp-enable-symbol-highlighting nil)
   ;; (setq lsp-signature-auto-activate nil)
+  (setq lsp-prefer-capf t)
 
   ;; comment to disable rustfmt on save
   (setq rustic-format-on-save t)
@@ -170,6 +179,33 @@
   (when buffer-file-name
     (setq-local buffer-save-without-query t)))
 
+(use-package exec-path-from-shell
+  :ensure
+  :init (exec-path-from-shell-initialize))
+
+(use-package dap-mode
+  :ensure
+  :config
+  (dap-ui-mode)
+  (dap-ui-controls-mode 1)
+
+  (require 'dap-lldb)
+  (require 'dap-gdb-lldb)
+  (require 'dap-cpptools)
+  ;; installs .extension/vscode
+  (dap-gdb-lldb-setup)
+  (dap-register-debug-template
+   "Rust::LLDB Run Configuration"
+   (list :type "lldb"
+         :request "launch"
+         :name "LLDB::Run"
+	 :gdbpath "rust-lldb"
+         :target nil
+         :cwd nil)))
+
+(setq-default indent-tabs-mode nil)
+
+(use-package lua-mode :ensure)
 
 
 (custom-set-variables
@@ -179,7 +215,7 @@
  ;; If there is more than one, they won't work right.
  '(fill-column 80)
  '(package-selected-packages '(use-package cmake-mode auto-package-update))
- '(typescript-indent-level 2))
+ '(typescript-indent-level 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
