@@ -207,6 +207,8 @@
 
 (use-package lua-mode :ensure)
 
+(use-package dockerfile-mode :ensure)
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
