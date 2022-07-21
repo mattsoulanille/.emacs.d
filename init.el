@@ -206,7 +206,7 @@
 (setq-default indent-tabs-mode nil)
 
 (use-package lua-mode :ensure)
-
+(use-package yaml-mode :ensure)
 (use-package dockerfile-mode :ensure)
 
 
