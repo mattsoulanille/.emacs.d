@@ -69,7 +69,10 @@
          ;; if you want which-key integration
          (lsp-mode . lsp-enable-which-key-integration))
   :bind (:map lsp-mode-map
-	      ("C-c C-f" . lsp-execute-code-action))
+	      ("C-c C-f" . lsp-execute-code-action)
+              ("M-." . lsp-goto-type-definition)
+              ("M->" . lsp-goto-implementation)
+              )
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
   (lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -209,6 +212,7 @@
 (use-package yaml-mode :ensure)
 (use-package dockerfile-mode :ensure)
 
+(use-package lsp-java :ensure)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -216,8 +220,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(fill-column 80)
+ '(js-indent-level 2)
  '(package-selected-packages '(use-package cmake-mode auto-package-update))
- '(typescript-indent-level 4))
+ '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
