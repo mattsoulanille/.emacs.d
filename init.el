@@ -71,7 +71,7 @@
   :bind (:map lsp-mode-map
 	      ("C-c C-f" . lsp-execute-code-action)
               ("M-." . lsp-goto-type-definition)
-              ("M->" . lsp-goto-implementation)
+;              ("M->" . lsp-goto-implementation)
               )
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
