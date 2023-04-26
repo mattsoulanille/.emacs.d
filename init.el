@@ -74,6 +74,7 @@
 ;              ("M->" . lsp-goto-implementation)
               )
   :custom
+  (lsp-keymap-prefix "C-c l")
   ;; what to use when checking on-save. "check" is default, I prefer clippy
   (lsp-rust-analyzer-cargo-watch-command "clippy")
   (lsp-eldoc-render-all t)
@@ -214,15 +215,23 @@
 
 (use-package lsp-java :ensure)
 
+(use-package csharp-mode
+  :ensure
+  :init
+  (defun my/csharp-mode-hook ()
+    (lsp))
+  (add-hook 'csharp-mode-hook #'my/csharp-mode-hook))
+
+(setenv "FrameworkPathOverride" "/opt/homebrew/Cellar/mono/6.12.0.182")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fill-column 80)
- '(js-indent-level 2)
- '(package-selected-packages '(use-package cmake-mode auto-package-update))
- '(typescript-indent-level 2))
+ '(indent-tabs-mode nil)
+ '(package-selected-packages
+   '(csharp-mode yaml-mode which-key use-package typescript-mode toml-mode tide rustic projectile multiple-cursors minimap magit lua-mode lsp-ui lsp-pyright lsp-java json-mode ivy exec-path-from-shell eglot dockerfile-mode company-quickhelp company-irony company-emacs-eclim cmake-mode browse-at-remote bazel auto-package-update)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
