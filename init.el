@@ -74,6 +74,7 @@
 ;              ("M->" . lsp-goto-implementation)
               )
   :custom
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]venv\\'")
   (lsp-keymap-prefix "C-c l")
   ;; what to use when checking on-save. "check" is default, I prefer clippy
   (lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -229,9 +230,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(fill-column 80)
  '(indent-tabs-mode nil)
  '(package-selected-packages
-   '(csharp-mode yaml-mode which-key use-package typescript-mode toml-mode tide rustic projectile multiple-cursors minimap magit lua-mode lsp-ui lsp-pyright lsp-java json-mode ivy exec-path-from-shell eglot dockerfile-mode company-quickhelp company-irony company-emacs-eclim cmake-mode browse-at-remote bazel auto-package-update)))
+   '(csharp-mode yaml-mode which-key use-package typescript-mode toml-mode tide rustic projectile multiple-cursors minimap magit lua-mode lsp-ui lsp-pyright lsp-java json-mode ivy exec-path-from-shell eglot dockerfile-mode company-quickhelp company-irony company-emacs-eclim cmake-mode browse-at-remote bazel auto-package-update))
+ '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
