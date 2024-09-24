@@ -1,5 +1,5 @@
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
 (package-initialize)
 
 (setq column-number-mode t)
@@ -27,6 +27,7 @@
 	  (company-clang)
 	  (company-files))))
 
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (use-package ivy
   :ensure
   :custom
@@ -125,6 +126,7 @@
               ("C-c C-u" . uncomment-region))
   :config (defun setup-tide-mode ()
 	    (tide-setup)
+            (setq tide-tsserver-process-environment '("NODE_OPTIONS=--max-old-space-size=32768"))
 	    (flycheck-mode +1)
 	    (setq flycheck-check-syntax-automatically '(save mode-enabled))
 	    (eldoc-mode +1)
@@ -211,7 +213,10 @@
 (setq-default indent-tabs-mode nil)
 
 (use-package lua-mode :ensure)
-(use-package yaml-mode :ensure)
+(use-package yaml-mode
+  :ensure
+  :hook (yaml-mode . lsp))
+
 (use-package dockerfile-mode :ensure)
 
 (use-package lsp-java :ensure)
@@ -232,8 +237,11 @@
  ;; If there is more than one, they won't work right.
  '(fill-column 80)
  '(indent-tabs-mode nil)
+ '(js-indent-level 2)
+ '(lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces nil)
  '(package-selected-packages
    '(csharp-mode yaml-mode which-key use-package typescript-mode toml-mode tide rustic projectile multiple-cursors minimap magit lua-mode lsp-ui lsp-pyright lsp-java json-mode ivy exec-path-from-shell eglot dockerfile-mode company-quickhelp company-irony company-emacs-eclim cmake-mode browse-at-remote bazel auto-package-update))
+ '(tide-format-options nil)
  '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
