@@ -108,8 +108,18 @@
                          (require 'lsp-pyright)
                          (lsp))))  ; or lsp-deferred
 
+(use-package nvm
+  :ensure t
+  :config
+  (nvm-use "20"))
+
 ;; TypeScript
-(use-package typescript-mode :ensure)
+(use-package typescript-mode
+  :ensure
+  :mode ("\\.ts\\'" "\\.tsx\\'" "\\.mts\\'")
+  )
+(add-to-list 'auto-mode-alist '("\\.mts\\'" . typescript-mode))
+
 (use-package tide
   :ensure
   :after (typescript-mode flycheck)
@@ -136,10 +146,10 @@
 
 
 (use-package magit :ensure)
-(use-package bazel
-  :ensure
-  :config
-  (setq bazel-buildifier-before-save t))
+;; (use-package bazel
+;;   :ensure
+;;   :config
+;;   (setq bazel-buildifier-before-save t))
 
 (use-package json-mode
   :ensure
@@ -221,28 +231,27 @@
 
 (use-package lsp-java :ensure)
 
-(use-package csharp-mode
-  :ensure
-  :init
-  (defun my/csharp-mode-hook ()
-    (lsp))
-  (add-hook 'csharp-mode-hook #'my/csharp-mode-hook))
-
 (setenv "FrameworkPathOverride" "/opt/homebrew/Cellar/mono/6.12.0.182")
+(use-package groovy-mode :ensure)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes nil)
  '(fill-column 80)
- '(indent-tabs-mode nil)
- '(js-indent-level 2)
  '(lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces nil)
- '(package-selected-packages
-   '(csharp-mode yaml-mode which-key use-package typescript-mode toml-mode tide rustic projectile multiple-cursors minimap magit lua-mode lsp-ui lsp-pyright lsp-java json-mode ivy exec-path-from-shell eglot dockerfile-mode company-quickhelp company-irony company-emacs-eclim cmake-mode browse-at-remote bazel auto-package-update))
- '(tide-format-options nil)
- '(typescript-indent-level 2))
+ '(indent-tabs-mode nil)
+ '(inhibit-startup-screen t)
+ '(ispell-dictionary nil)
+ '(js-indent-level 2)
+ '(lsp-pyright-langserver-command-args '("--stdio"))
+ '(package-selected-packages nil)
+ '(typescript-indent-level 2)
+ '(web-mode-code-indent-offset 2)
+ '(web-mode-css-indent-offset 2)
+ '(web-mode-markup-indent-offset 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
